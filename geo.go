@@ -8,51 +8,40 @@ package gogeo
 #cgo LDFLAGS: -lm
 */
 import "C"
-import (
-	"errors"
-	"sync"
-	"unsafe"
+import "errors"
+
+const (
+	GEO_F_ALIAS = 1
 )
 
-var mutex sync.Mutex
-
-//ips_t * open_ips(char *filename, uint32_t flags){
 func Open_ips(filename string, flags uint32) (ips *C.struct_ips_t, err error) {
 	var null *C.struct_ips_t
 
-	ips = C.open_ips(C.CString(filename), C.uint(flags))
+	ips = C.open_ips(C.CString(filename), C.uint32_t(flags))
 	if ips == null {
 		return nil, errors.New("can not open " + filename)
 	}
 	return ips, nil
 }
 
-//void clean_ips(ips_t *ips){
-func Clean_ips(ips unsafe.Pointer) {
-	C.clean_ips(*C.struct_ips_t(ips))
+func Clean_ips(ips *C.struct_ips_t) {
+	C.clean_ips(ips)
 }
 
-/*
-typedef struct ip_entry{
-#ifdef DEBUG
-	uint32_t min;
-	uint32_t max;
-#endif
-    uintptr_t country;
-    uintptr_t province;
-    uintptr_t city;
-    uintptr_t village;
-    uintptr_t isp;
-*/
-//e = (ip_entry *)radix32tree_find(ips->tree, mbuf.u.sip);
-func Find_ip(_ips unsafe.Pointer, ip string) (isp, province string, err error) {
-	var null *C.struct_ip_entry
-	ips := *C.struct_ips_t(_ips)
-	p := (*C.struct_ip_entry)(C.radix32tree_find(ips._tree, C.CString(ip)))
+func Find_ip(ips *C.struct_ips_t, ip string) (isp, province string, err error) {
+	var null *C.struct_out_entry
+	p := C.find_ip(ips, C.CString(ip))
 	if p != null {
-		isp := C.GoString(p._isp)
-		province := C.GoString(p._province)
+		isp = C.GoString(p.isp)
+		if len(isp) > 2 && isp[:2] == "i_" {
+			isp = isp[2:]
+		}
+		province = C.GoString(p.province)
+		if len(province) > 2 && province[:2] == "p_" {
+			province = province[2:]
+		}
 	} else {
 		err = errors.New("not found")
 	}
+	return
 }

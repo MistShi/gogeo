@@ -48,6 +48,19 @@ typedef struct ip_entry{
     uintptr_t isp;
 }ip_entry;
 
+typedef struct out_entry{
+#ifdef DEBUG
+	uint32_t min;
+	uint32_t max;
+#endif
+    char *country;
+    char *province;
+    char *city;
+    char *village;
+    char *isp;
+}out_entry;
+
+
 
 typedef struct ips_t{
 	int e_len;
@@ -69,6 +82,7 @@ char *__u32toa(uint32_t u);
 void dump_ips(ips_t *ips);
 ips_t * open_ips(char *filename, uint32_t flags);
 void clean_ips(ips_t *ips);
+out_entry *find_ip(ips_t *ips, char *ip);
 void print_ip(ips_t *ips, char *ip);
 void dump_ips(ips_t *ips);
 int radix_insert(radix_tree_t *tree, uint32_t min, int prefix, uintptr_t value);

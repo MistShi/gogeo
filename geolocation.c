@@ -224,6 +224,12 @@ void clean_ips(ips_t *ips){
 	ips = NULL;
 }
 
+out_entry *find_ip(ips_t *ips, char *ip){
+	struct in_addr add;
+	inet_aton(ip, &add);
+	return  (out_entry *)radix32tree_find(ips->tree, ntohl(add.s_addr));
+}
+
 void print_ip(ips_t *ips, char *ip){
 	ip_entry *e;
 	struct in_addr add;
