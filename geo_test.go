@@ -7,19 +7,19 @@ import (
 
 func TestAll(t *testing.T) {
 	{
-		ips, _ := Open_ips("./ip_sample.txt", 0)
-		fmt.Println(Find_ip(ips, "1.0.167.5"))
-		fmt.Println(Find_ip(ips, "1.0.165.5"))
-		fmt.Println(Find_ip(ips, "1.0.8.5"))
-		Clean_ips(ips)
+		geo, _ := New("./ip_sample.txt", 0)
+		fmt.Println(geo.Find_ip("1.0.167.5"))
+		fmt.Println(geo.Find_ip("1.0.165.5"))
+		fmt.Println(geo.Find_ip("1.0.8.5"))
+		geo.Clean()
 	}
 
 	fmt.Println("--------alias begin--------")
 	{
-		ips, _ := Open_ips("./ip_sample.txt", GEO_F_ALIAS)
-		fmt.Println(Find_ip(ips, "1.0.167.5"))
-		fmt.Println(Find_ip(ips, "1.0.165.5"))
-		fmt.Println(Find_ip(ips, "1.0.8.5"))
-		Clean_ips(ips)
+		geo, _ := New("./ip_sample.txt", GEO_F_ALIAS)
+		fmt.Println(geo.Find_ip("1.0.167.5"))
+		fmt.Println(geo.Find_ip("1.0.165.5"))
+		fmt.Println(geo.Find_ip("1.0.8.5"))
+		geo.Clean()
 	}
 }

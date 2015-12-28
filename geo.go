@@ -14,23 +14,24 @@ const (
 	GEO_F_ALIAS = 1
 )
 
-func Open_ips(filename string, flags uint32) (ips *C.struct_ips_t, err error) {
-	var null *C.struct_ips_t
-
-	ips = C.open_ips(C.CString(filename), C.uint32_t(flags))
-	if ips == null {
-		return nil, errors.New("can not open " + filename)
-	}
-	return ips, nil
+type Geo struct {
+	ips *C.struct_ips_t
 }
 
-func Clean_ips(ips *C.struct_ips_t) {
-	C.clean_ips(ips)
+func New(filename string, flags uint32) (geo *Geo, err error) {
+	geo = &Geo{}
+	geo.ips, err = open_ips(filename, flags)
+	return
 }
 
-func Find_ip(ips *C.struct_ips_t, ip string) (isp, province string, err error) {
+func (geo *Geo) Clean() {
+	C.clean_ips(geo.ips)
+	geo.ips = nil
+}
+
+func (geo *Geo) Find_ip(ip string) (isp, province string, err error) {
 	var null *C.struct_out_entry
-	p := C.find_ip(ips, C.CString(ip))
+	p := C.find_ip(geo.ips, C.CString(ip))
 	if p != null {
 		isp = C.GoString(p.isp)
 		if len(isp) > 2 && isp[:2] == "i_" {
@@ -44,4 +45,14 @@ func Find_ip(ips *C.struct_ips_t, ip string) (isp, province string, err error) {
 		err = errors.New("not found")
 	}
 	return
+}
+
+func open_ips(filename string, flags uint32) (ips *C.struct_ips_t, err error) {
+	var null *C.struct_ips_t
+
+	ips = C.open_ips(C.CString(filename), C.uint32_t(flags))
+	if ips == null {
+		return nil, errors.New("can not open " + filename)
+	}
+	return ips, nil
 }
