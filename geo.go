@@ -12,6 +12,7 @@ import "errors"
 
 const (
 	GEO_F_ALIAS = 1
+	GEO_N_ALIAS = 0
 )
 
 type Geo struct {
